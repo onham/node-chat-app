@@ -1,4 +1,4 @@
-const socket = io();  //making a request to the server to open up a web socket
+var socket = io();  //making a request to the server to open up a web socket
 
 socket.on('connect', function() { 
 	console.log('connected to server');

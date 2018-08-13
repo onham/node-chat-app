@@ -15,6 +15,17 @@ socket.on('newMessage', function(message) {
 	jQuery("#messages").append(li);
 });
 
+socket.on('newLocationMessage', function(message) {
+	console.log('new message received!', message);
+	const li = jQuery(`<li></li>`);
+	const a = jQuery(`<a target="_blank">my current location<a>`)
+	
+	li.text(`${message.from}: `);
+	a.attr('href', message.url);   //change attr of a tag -- for security -- to prevent code injection
+	li.append(a);  //appending a to li
+
+	jQuery('#messages').append(li);
+});
 
 document.getElementById("message-form").addEventListener('submit', function(e){
 	e.preventDefault();
@@ -33,7 +44,12 @@ locationButton.addEventListener('click', function(){
 	}
 
 	navigator.geolocation.getCurrentPosition(function(position) {
-		console.log(position);
+		socket.emit('createLocationMessage', {
+			latitude: position.coords.latitude,
+			longitude: position.coords.longitude
+		}, function(message){
+			console.log(message);
+		});
 	}, function(){
 		alert('unable to fetch location');
 	});

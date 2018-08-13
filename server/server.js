@@ -2,7 +2,7 @@ const path = require('path');
 const http = require('http');   //express is actually built on http
 const express = require('express');
 const socketIO = require('socket.io');
-const { generateMessage } = require('./utils/message');
+const { generateMessage, generateLocationMessage } = require('./utils/message');
 
 const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
@@ -17,22 +17,20 @@ app.use(express.static(publicPath));  //for the app to access static assets in t
 
 io.on('connection', (socket) => {   //our event listener
 	console.log('new user connected');
- 
-	// socket.emit('newMessage', {     //emit will send the 2nd arg to the listener on our client side and pass that in as the arg to the callback func
-	// 	from: 'quanny@example.com',
-	// 	text: 'Hey whats up thotty',
-	// 	createdAt: 123
-	// }); 
 
 	socket.emit('newMessage', generateMessage('admin','welcome user'))
 
 	socket.broadcast.emit('newMessage', generateMessage('admin','a new challenger has appeared'))
 
-
 	socket.on('createMessage', (message, callback) => {
 		console.log('logging message', message);
 		io.emit('newMessage', generateMessage(message.from, message.text)); //the broadcast event fires to everybody but myself
 		callback('automatic message sent'); //our acknowledgement passed to the frontend
+	});
+
+	socket.on('createLocationMessage', (location, callback) => {
+		io.emit('newLocationMessage', generateLocationMessage('meeshy', location.latitude, location.longitude));
+		callback('location sent');
 	});
 
 	socket.on('disconnect', () => {

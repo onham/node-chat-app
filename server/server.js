@@ -29,15 +29,12 @@ io.on('connection', (socket) => {   //our event listener
 	socket.broadcast.emit('newMessage', generateMessage('admin','a new challenger has appeared'))
 
 
-	socket.on('createMessage', (message) => {
+	socket.on('createMessage', (message, callback) => {
 		console.log('logging message', message);
-		// io.emit('newMessage', {       //emitting an event to every single socket/connection
-		// 	from: message.from,
-		// 	text: message.text,
-		// 	createdAt: new Date().getTime()
-		// });
+		// io.emit('newMessage', generateMessage(message.from, message.text)); //emitting an event to every single socket/connection
 
 		socket.broadcast.emit('newMessage', generateMessage(message.from, message.text)); //the broadcast event fires to everybody but myself
+		callback('automatic message sent'); //our acknowledgement passed to the frontend
 	});
 
 	socket.on('disconnect', () => {

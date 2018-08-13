@@ -15,5 +15,18 @@ socket.on('disconnect', function() {
 
 socket.on('newMessage', function(message) {
 	console.log('new message received!', message);
+	const li = jQuery('<li></li>');
+	li.text(`${message.from}: ${message.text}`);
+	jQuery("#messages").append(li);
 });
 
+
+document.getElementById("message-form").addEventListener('submit', function(e){
+	e.preventDefault();
+	socket.emit('createMessage', {
+		from: 'quanny',
+		text: document.getElementById("msg").value
+	}, function(message) {   //for acknowledgement from server to client -- passed to callback in backend 
+		console.log(message);
+	});
+});

@@ -31,9 +31,7 @@ io.on('connection', (socket) => {   //our event listener
 
 	socket.on('createMessage', (message, callback) => {
 		console.log('logging message', message);
-		// io.emit('newMessage', generateMessage(message.from, message.text)); //emitting an event to every single socket/connection
-
-		socket.broadcast.emit('newMessage', generateMessage(message.from, message.text)); //the broadcast event fires to everybody but myself
+		io.emit('newMessage', generateMessage(message.from, message.text)); //the broadcast event fires to everybody but myself
 		callback('automatic message sent'); //our acknowledgement passed to the frontend
 	});
 

@@ -33,7 +33,7 @@ locationButton.addEventListener('click', function(){
 	}
 
 	navigator.geolocation.getCurrentPosition(function(position) {
-
+		console.log(position);
 	}, function(){
 		alert('unable to fetch location');
 	});

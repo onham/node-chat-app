@@ -12,23 +12,31 @@ socket.on('disconnect', function() {
 
 
 socket.on('newMessage', function(message) {
-	console.log('new message received!', message);
-	const li = jQuery('<li></li>');
-	li.text(`${message.from}: ${message.text}`);
-	jQuery("#messages").append(li);
+	const template = jQuery("#message-template").html();
+
+	//using mustache to render our markup
+	const html = Mustache.render(template, {   
+		text: message.text,
+		from: message.from,
+		createdAt: message.createdAt
+	});
+
+	jQuery("#messages").append(html);
 });
 
 
 socket.on('newLocationMessage', function(message) {
-	console.log('new message received!', message);
-	const li = jQuery(`<li></li>`);
-	const a = jQuery(`<a target="_blank">my current location<a>`)
-	
-	li.text(`${message.from}: `);
-	a.attr('href', message.url);   //change attr of a tag -- for security -- to prevent code injection
-	li.append(a);  //appending a to li
+	const template = jQuery("#location-message-template").html();
 
-	jQuery('#messages').append(li);
+	//using mustache to render our markup
+	const html = Mustache.render(template, {   
+		text: 'My current location',
+		from: message.from,
+		url: message.url,
+		createdAt: message.createdAt
+	});
+
+	jQuery("#messages").append(html);
 });
 
 

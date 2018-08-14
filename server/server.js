@@ -25,12 +25,11 @@ io.on('connection', (socket) => {   //our event listener
 	socket.on('createMessage', (message, callback) => {
 		console.log('logging message', message);
 		io.emit('newMessage', generateMessage(message.from, message.text)); //the broadcast event fires to everybody but myself
-		callback('automatic message sent'); //our acknowledgement passed to the frontend
+		callback('message sent'); //our acknowledgement passed to the frontend
 	});
 
-	socket.on('createLocationMessage', (location, callback) => {
-		io.emit('newLocationMessage', generateLocationMessage('meeshy', location.latitude, location.longitude));
-		callback('location sent');
+	socket.on('createLocationMessage', (location) => {
+		io.emit('newLocationMessage', generateLocationMessage('quanny', location.latitude, location.longitude));
 	});
 
 	socket.on('disconnect', () => {

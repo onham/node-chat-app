@@ -79,11 +79,9 @@ socket.on('newLocationMessage', function(message) {
 document.getElementById("message-form").addEventListener('submit', function(e){
 	e.preventDefault();
 
-	const params = jQuery.deparam(window.location.search);
 	const messageTextbox = document.getElementById("msg");
 
 	socket.emit('createMessage', {
-		from: params.name,
 		text: messageTextbox.value
 	}, function(message) {   //for acknowledgement from server to client -- passed to callback in backend 
 		console.log(message);
@@ -99,14 +97,11 @@ locationButton.addEventListener('click', async function(){
 		return alert('geolocation not supported by browser');
 	}
 
-	const params = jQuery.deparam(window.location.search);
-
 	locationButton.setAttribute('disabled', true);
-	
+
 	await navigator.geolocation.getCurrentPosition(function(position) {
 		locationButton.removeAttribute('disabled');
 		socket.emit('createLocationMessage', {
-			name: params.name,
 			latitude: position.coords.latitude,
 			longitude: position.coords.longitude
 		}, (e) => {

@@ -21,7 +21,6 @@ app.use(express.static(publicPath));  //for the app to access static assets in t
 io.on('connection', (socket) => {   //our event listener
 	console.log('new user connected');
 
-
 	socket.on('join', (params, callback) => {
 		if (!isRealString(params.name) || !isRealString(params.room)) {
 			return callback('name and room name are required');
@@ -41,13 +40,21 @@ io.on('connection', (socket) => {   //our event listener
 
 	socket.on('createMessage', (message, callback) => {
 		console.log('logging message', message);
-		io.emit('newMessage', generateMessage(message.from, message.text)); //the broadcast event fires to everybody but myself
+
+		const user = users.getUser(socket.id);
+
+		if (user && isRealString(message.text)) {
+			io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+		}
 		callback('message sent'); //our acknowledgement passed to the frontend
 	});
 
 	socket.on('createLocationMessage', (location) => {
+		const user = users.getUser(socket.id);
 
-		io.emit('newLocationMessage', generateLocationMessage(location.name, location.latitude, location.longitude));
+		if (user) {
+			io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, location.latitude, location.longitude));
+		}
 	});
 
 	socket.on('disconnect', () => {

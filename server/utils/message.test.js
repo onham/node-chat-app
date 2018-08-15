@@ -7,7 +7,7 @@ describe('generateMessage', () => {
 		const message = generateMessage('quanny', 'henlo');
 		expect(message.from).toBe('quanny');
 		expect(message.text).toBe('henlo');
-		assert.equal('number', typeof message.createdAt);
+		assert.equal('string', typeof message.createdAt);
 	});
 });
 
@@ -19,6 +19,6 @@ describe('generateLocationMessage', () => {
 		const location = generateLocationMessage(name, lat, lon);
 		expect(location.from).toBe(name);
 		expect(location.url).toBe(`https://www.google.com/maps?q=${lat},${lon}`);
-		assert.equal('number', typeof location.createdAt);
+		assert.equal('string', typeof location.createdAt);
 	});
 });

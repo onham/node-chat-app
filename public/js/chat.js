@@ -17,6 +17,17 @@ function scrollToBottom() {
 }
 
 socket.on('connect', function() { 
+	const params = jQuery.deparam(window.location.search); //object that includes the username and the room name
+
+	socket.emit("join", params, function(e) {
+		if (e) {
+			alert(e)
+			window.location.href = '/';    //manipulating what page the user is on
+		} else {
+			console.log('no error');
+		}
+	});
+
 	console.log('connected to server');
 });
 
@@ -25,6 +36,14 @@ socket.on('disconnect', function() {
 	console.log('disconnected from server');
 });
 
+
+socket.on('updateUserList', function(users) {
+	const ol = jQuery('<ol></ol>');
+	users.forEach(function(user){
+		ol.append(jQuery('<li></li>').text(user));
+	});
+	jQuery('#users').html(ol);
+});
 
 socket.on('newMessage', function(message) {
 	const template = jQuery("#message-template").html();
@@ -59,11 +78,12 @@ socket.on('newLocationMessage', function(message) {
 
 document.getElementById("message-form").addEventListener('submit', function(e){
 	e.preventDefault();
-	
+
+	const params = jQuery.deparam(window.location.search);
 	const messageTextbox = document.getElementById("msg");
 
 	socket.emit('createMessage', {
-		from: 'quanny',
+		from: params.name,
 		text: messageTextbox.value
 	}, function(message) {   //for acknowledgement from server to client -- passed to callback in backend 
 		console.log(message);
@@ -74,14 +94,19 @@ document.getElementById("message-form").addEventListener('submit', function(e){
 
 const locationButton = document.getElementById("send-location");
 locationButton.addEventListener('click', async function(){
+
 	if (!navigator.geolocation) {  //geolocation api
 		return alert('geolocation not supported by browser');
 	}
 
+	const params = jQuery.deparam(window.location.search);
+
 	locationButton.setAttribute('disabled', true);
+	
 	await navigator.geolocation.getCurrentPosition(function(position) {
 		locationButton.removeAttribute('disabled');
 		socket.emit('createLocationMessage', {
+			name: params.name,
 			latitude: position.coords.latitude,
 			longitude: position.coords.longitude
 		}, (e) => {

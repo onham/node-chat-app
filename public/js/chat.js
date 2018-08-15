@@ -16,6 +16,7 @@ function scrollToBottom() {
 	}
 }
 
+
 socket.on('connect', function() { 
 	const params = jQuery.deparam(window.location.search); //object that includes the username and the room name
 
@@ -45,14 +46,18 @@ socket.on('updateUserList', function(users) {
 	jQuery('#users').html(ol);
 });
 
+
 socket.on('newMessage', function(message) {
+
+	const formattedTime = moment(message.createdAt).format('h:mm a');
+
 	const template = jQuery("#message-template").html();
 
 	//using mustache to render our markup
 	const html = Mustache.render(template, {   
 		text: message.text,
 		from: message.from,
-		createdAt: message.createdAt
+		createdAt: formattedTime
 	});
 
 	jQuery("#messages").append(html);
@@ -61,6 +66,9 @@ socket.on('newMessage', function(message) {
 
 
 socket.on('newLocationMessage', function(message) {
+
+	const formattedTime = moment(message.createdAt).format('h:mm a');
+
 	const template = jQuery("#location-message-template").html();
 
 	//using mustache to render our markup
@@ -68,7 +76,7 @@ socket.on('newLocationMessage', function(message) {
 		text: 'My current location',
 		from: message.from,
 		url: message.url,
-		createdAt: message.createdAt
+		createdAt: formattedTime
 	});
 
 	jQuery("#messages").append(html);

@@ -21,10 +21,12 @@ app.use(express.static(publicPath));  //for the app to access static assets in t
 io.on('connection', (socket) => {   //our event listener
 	console.log('new user connected');
 
+
 	socket.on('join', (params, callback) => {
 		if (!isRealString(params.name) || !isRealString(params.room)) {
 			return callback('name and room name are required');
 		}
+
 
 		socket.join(params.room);
 		users.removeUser(socket.id);  //socket.id is where you get the id for the object
@@ -49,6 +51,7 @@ io.on('connection', (socket) => {   //our event listener
 		callback('message sent'); //our acknowledgement passed to the frontend
 	});
 
+
 	socket.on('createLocationMessage', (location) => {
 		const user = users.getUser(socket.id);
 
@@ -56,6 +59,7 @@ io.on('connection', (socket) => {   //our event listener
 			io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, location.latitude, location.longitude));
 		}
 	});
+
 
 	socket.on('disconnect', () => {
 		const user = users.removeUser(socket.id);
